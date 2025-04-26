@@ -437,9 +437,6 @@ def main():
     if query:
         st.session_state["messages"].append(f"User: {query}")
 
-        # Trigger the graph and update conversation
-        app.execute()
-
         # Display the summary
         st.write(st.session_state.get("final_summary", "No results found."))
 
