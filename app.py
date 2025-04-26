@@ -391,8 +391,7 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
-    st.markdown('<h1 class="main-title">Web Research Agent</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-header">Enter a research query, and let the AI-powered agent conduct a thorough search and analysis.</p>', unsafe_allow_html=True)
+
 
     # --- Session State ---
     if 'conversation_history' not in st.session_state:
@@ -427,23 +426,30 @@ def main():
 
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # Auto-scroll JavaScript
-        components.html(
-            """
-            <script>
-                var chatContainer = window.parent.document.querySelector('#chat-container');
-                if (chatContainer) {
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                }
-            </script>
-            """,
-            height=0,
-        )
+    # Title and description
+    st.markdown('<h1 class="main-title">Web Research Agent</h1>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-header">Enter a research query, and let the AI-powered agent conduct a thorough search and analysis.</p>', unsafe_allow_html=True)
 
-    # --- Some Tips ---
+    # User input
+    query = st.text_input("Enter your research query:", "")
     st.markdown("### Helpful Tips:")
     st.markdown("- Make sure your query is clear and concise.")
-    st.markdown("- You can ask about any topic, from historical events to technology trends.")
+    st.markdown("- You can ask for any topic, from science to history!")
+    
+    if st.button("Start Research", key="start_research", help="Click here to start the research process.", disabled=not query):
+        with st.spinner("Processing..."):
+            app.invoke({"messages": [{"role": "user", "content": query}]})
+
+    elif not query:
+        st.warning("😵‍💫😵‍💫 Please enter a query to start the research.")
+
+    # Loading indicator
+    st.progress(0)
+
+    
+
+if __name__ == "__main__":
+    main()
 
 if __name__ == "__main__":
     main()
