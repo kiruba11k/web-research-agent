@@ -383,28 +383,6 @@ def main():
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        /* Sidebar style */
-        .sidebar {
-            width: 25%;
-            float: left;
-            padding: 20px;
-            border-right: 1px solid #ccc;
-        }
-
-        .conversation-history {
-            height: 80vh;
-            overflow-y: auto;
-            padding: 10px;
-            background-color: #F0F0F0;
-            border-radius: 8px;
-        }
-
-        .conversation-message {
-            padding: 10px;
-            margin-bottom: 5px;
-            border-radius: 5px;
-            background-color: #E0E0E0;
-        }
  /* Sidebar style */
         .sidebar {
             width: 25%;
