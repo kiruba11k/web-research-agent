@@ -1,4 +1,3 @@
-from io import StringIO
 import os
 import time
 import requests
@@ -7,22 +6,18 @@ from serpapi.google_search import GoogleSearch
 from bs4 import BeautifulSoup
 from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
-from langchain_core.runnables import RunnableLambda
 import re
 from typing import Annotated, Optional, List
 import json
 from typing import TypedDict
 from openai import OpenAI
 import random
-import asyncio
-import aiohttp
 from urllib.parse import urlparse
 from urllib.robotparser import RobotFileParser
 import pandas as pd
 import random
 from urllib.robotparser import RobotFileParser
 from urllib.parse import urlparse
-from io import StringIO
 
 
 # Load API Key from Streamlit Secrets
@@ -52,7 +47,6 @@ status_placeholder = st.empty()
 def query_analysis_node(state: AgentState):
     with st.spinner("🤓 Analyzing query..."):
         status_placeholder.info("🤓 Analyzing query...")
-        state = query_analysis_node(state)
         time.sleep(2)
     try:
         messages = state["messages"]
@@ -106,7 +100,6 @@ def score_result(result, query_terms):
 def web_search_node(state: AgentState):
     with st.spinner("🕵️‍♂️ Searching the web..."):
         status_placeholder.info("🕵️‍♂️ Searching the web...")
-        state = web_search_node(state)
         time.sleep(2)
     try:
         # Retrieve the query plan from memory
@@ -154,7 +147,23 @@ def web_search_node(state: AgentState):
                         "snippet": result.get("snippet", ""),
                         "score": score_result(result, query_terms)
                     })
+                st.markdown("<div class='toggle-btn' onclick='toggleBox()'>Toggle Results</div>", unsafe_allow_html=True)
 
+                html = "<div class='corner-box'><div class='close-btn' onclick='closeBox()'>❌</div><h4>🔍 Search Results</h4>"
+
+                for result in search_results:
+                    html += f"""
+                        <div style='margin-bottom:12px; padding:8px; border-bottom:1px solid #eee;'>
+                            <strong>{result['title']}</strong><br>
+                            <small>{result['snippet']}</small><br>
+                            <a href="{result['link']}" target="_blank">Visit Site</a><br>
+                            <small>⭐ Score: {round(result['score'], 2)}</small>
+                        </div>
+                    """
+
+                html += "</div>"
+
+                st.markdown(html, unsafe_allow_html=True)
         if not search_results:
             raise ValueError("No search results found for any query.")
 
@@ -184,7 +193,6 @@ def is_scraping_allowed(url):
 def web_scraper_node(state: AgentState):
     with st.spinner("🥷 Scraping content from web..."):
         status_placeholder.info("🥷 Scraping content from top sites...")
-        state = web_scraper_node(state)
         time.sleep(2)
     try:
         extracted_content = []
@@ -265,7 +273,6 @@ def web_scraper_node(state: AgentState):
 def content_synthesis_node(state: AgentState):
     with st.spinner("👩‍🍳👨‍🍳 Synthesizing final content..."):
         status_placeholder.info("👩‍🍳👨‍🍳 Synthesizing final content...")
-        state = content_synthesis_node(state)
         time.sleep(2)
 
     try:
@@ -301,23 +308,23 @@ def content_synthesis_node(state: AgentState):
         combined_text = "\n\n".join(combined_chunks)
 
         prompt = f"""
-You are an expert researcher.
-
-User Query:
-"{query}"
-
-Below is content from top relevant web sources:
-{combined_text}
-
-Instructions:
-- Summarize the key points across all sources
-- Resolve any contradictions if found
-- Present a coherent, well-structured answer
-- Use bullet points or sections if helpful
-- Reference the source URLs inline (e.g., [source])
-
-Respond with a synthesized, human-readable summary:
-"""
+                    You are an expert researcher.
+                    
+                    User Query:
+                    "{query}"
+                    
+                    Below is content from top relevant web sources:
+                    {combined_text}
+                    
+                    Instructions:
+                    - Summarize the key points across all sources
+                    - Resolve any contradictions if found
+                    - Present a coherent, well-structured answer
+                    - Use bullet points or sections if helpful
+                    - Reference the source URLs inline (e.g., [source])
+                    
+                    Respond with a synthesized, human-readable summary:
+                    """
 
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
@@ -505,23 +512,7 @@ document.addEventListener('DOMContentLoaded', function () {
     # Loading indicator
     st.progress(0)
 
-    st.markdown("<div class='toggle-btn' onclick='toggleBox()'>Toggle Results</div>", unsafe_allow_html=True)
-
-    html = "<div class='corner-box'><div class='close-btn' onclick='closeBox()'>❌</div><h4>🔍 Search Results</h4>"
-
-    for result in search_results:
-        html += f"""
-            <div style='margin-bottom:12px; padding:8px; border-bottom:1px solid #eee;'>
-                <strong>{result['title']}</strong><br>
-                <small>{result['snippet']}</small><br>
-                <a href="{result['link']}" target="_blank">Visit Site</a><br>
-                <small>⭐ Score: {round(result['score'], 2)}</small>
-            </div>
-        """
-
-    html += "</div>"
-
-    st.markdown(html, unsafe_allow_html=True)
+    
 
 if __name__ == "__main__":
     main()
