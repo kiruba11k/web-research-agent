@@ -5,7 +5,6 @@ import requests
 import streamlit as st
 from serpapi.google_search import GoogleSearch
 from bs4 import BeautifulSoup
-from langchain_anthropic import ChatAnthropic
 from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
 from langchain_core.runnables import RunnableLambda
@@ -24,10 +23,7 @@ import random
 from urllib.robotparser import RobotFileParser
 from urllib.parse import urlparse
 from io import StringIO
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-# import undetected_chromedriver as uc
-from concurrent.futures import ThreadPoolExecutor, as_completed
+
 
 # Load API Key from Streamlit Secrets
 GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
