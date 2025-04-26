@@ -40,6 +40,7 @@ class AgentState(TypedDict):
     final_summary: Optional[str]
     error: Optional[str]
     memory: Optional[dict]  # Added memory to store information
+    conversation_history: Optional[List[str]] 
 
 
 # Step 1: Query Analysis
@@ -72,6 +73,11 @@ def query_analysis_node(state: AgentState):
             raise ValueError("Could not extract JSON from response")
 
         query_plan = json.loads(json_str.group(0))
+        
+        # Save the conversation history
+        conversation_history = state.get("conversation_history", [])
+        conversation_history.append(user_query)  # Append the latest query
+        state["conversation_history"] = conversation_history  # Update memory with conversation history
 
         # Store the query plan in memory
         state["memory"] = {"query": user_query, "query_plan": query_plan}
@@ -256,6 +262,10 @@ def content_synthesis_node(state: AgentState):
         if not sources:
             raise ValueError("No scraped content available for synthesis.")
 
+        # Combine previous conversation history for context-aware synthesis
+        conversation_history = state.get("conversation_history", [])
+        conversation_context = "\n".join(conversation_history[-5:])  # Use last 5 queries as context
+
         # Combine and limit text to avoid token overflow
         combined_chunks = []
         total_length = 0
@@ -278,24 +288,24 @@ def content_synthesis_node(state: AgentState):
         combined_text = "\n\n".join(combined_chunks)
 
         prompt = f"""
-                    You are an expert researcher.
-                    
+                    You are an expert researcher, and you are aware of the previous conversations:
+                    {conversation_context}
+
                     User Query:
                     "{query}"
-                    
+
                     Below is content from top relevant web sources:
                     {combined_text}
-                    
+
                     Instructions:
                     - Summarize the key points across all sources
                     - Resolve any contradictions if found
                     - Present a coherent, well-structured answer
                     - Use bullet points or sections if helpful
                     - Reference the source URLs inline (e.g., [source])
-                    
+
                     Respond with a synthesized, human-readable summary:
                     """
-
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}]
@@ -344,7 +354,6 @@ app = graph.compile()
 
 # Streamlit UI
 
-# Streamlit UI
 def main():
     # Custom CSS for styling
     st.markdown("""
@@ -374,6 +383,29 @@ def main():
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
 
+        /* Sidebar style */
+        .sidebar {
+            width: 25%;
+            float: left;
+            padding: 20px;
+            border-right: 1px solid #ccc;
+        }
+
+        .conversation-history {
+            height: 80vh;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #F0F0F0;
+            border-radius: 8px;
+        }
+
+        .conversation-message {
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            background-color: #E0E0E0;
+        }
+
         </style>
         """, unsafe_allow_html=True)
 
@@ -381,19 +413,35 @@ def main():
     st.markdown('<h1 class="main-title">Web Research Agent</h1>', unsafe_allow_html=True)
     st.markdown('<p class="sub-header">Enter a research query, and let the AI-powered agent conduct a thorough search and analysis.</p>', unsafe_allow_html=True)
 
+    # Create conversation sidebar to show history
+    st.sidebar.markdown('<h3>Conversation History</h3>', unsafe_allow_html=True)
+    conversation_history = st.sidebar.empty()
+    
+    # Update conversation history dynamically
+    if "messages" not in st.session_state:
+        st.session_state["messages"] = []
+
+    # Show messages in the sidebar
+    with conversation_history:
+        st.markdown('<div class="conversation-history">', unsafe_allow_html=True)
+        for msg in st.session_state["messages"]:
+            st.markdown(f'<div class="conversation-message">{msg}</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
     # User input
     query = st.text_input("Enter your research query:", "")
     st.markdown("### Helpful Tips:")
     st.markdown("- Make sure your query is clear and concise.")
-    st.markdown("- You can ask for any topic, from science to history!")
-    
-    if st.button("Start Research", key="start_research", help="Click here to start the research process.", disabled=not query):
-        with st.spinner("Processing..."):
-            app.invoke({"messages": [{"role": "user", "content": query}]})
+    st.markdown("- You can ask for any topic, from historical events to tech trends.")
 
-    elif not query:
-        st.warning("😵‍💫😵‍💫 Please enter a query to start the research.")
-    
+    if query:
+        st.session_state["messages"].append(f"User: {query}")
+
+        # Trigger the graph and update conversation
+        app.run()
+
+        # Display the summary
+        st.write(st.session_state.get("final_summary", "No results found."))
 
 if __name__ == "__main__":
     main()
