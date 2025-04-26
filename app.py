@@ -446,7 +446,6 @@ def main():
     st.markdown('<p class="sub-header">Enter a research query, and let the AI-powered agent conduct a thorough search and analysis.</p>', unsafe_allow_html=True)
 
     # User input
-    query = st.text_input("Enter your research query:", "")
     st.markdown("### Helpful Tips:")
     st.markdown("- Make sure your query is clear and concise.")
     st.markdown("- You can ask for any topic, from science to history!")
