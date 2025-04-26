@@ -41,13 +41,9 @@ class AgentState(TypedDict):
     error: Optional[str]
     memory: Optional[dict]  # Added memory to store information
 
-status_placeholder = st.empty()
 
 # Step 1: Query Analysis
 def query_analysis_node(state: AgentState):
-    with st.spinner("🤓 Analyzing query..."):
-        status_placeholder.info("🤓 Analyzing query...")
-        time.sleep(2)
     try:
         messages = state["messages"]
         user_query = messages[-1].content if hasattr(messages[-1], "content") else messages[-1]
@@ -98,9 +94,6 @@ def score_result(result, query_terms):
     return sum(term.lower() in combined for term in query_terms)
 
 def web_search_node(state: AgentState):
-    with st.spinner("🕵️‍♂️ Searching the web..."):
-        status_placeholder.info("🕵️‍♂️ Searching the web...")
-        time.sleep(2)
     try:
         # Retrieve the query plan from memory
         query_plan = state["memory"].get("query_plan", {})
@@ -191,9 +184,6 @@ def is_scraping_allowed(url):
         return False  # When in doubt, don't scrape
 
 def web_scraper_node(state: AgentState):
-    with st.spinner("🥷 Scraping content from web..."):
-        status_placeholder.info("🥷 Scraping content from top sites...")
-        time.sleep(2)
     try:
         extracted_content = []
         seen_urls = set()
@@ -271,10 +261,6 @@ def web_scraper_node(state: AgentState):
 
 # Step 4: Content Analyzer & Synthesizer
 def content_synthesis_node(state: AgentState):
-    with st.spinner("👩‍🍳👨‍🍳 Synthesizing final content..."):
-        status_placeholder.info("👩‍🍳👨‍🍳 Synthesizing final content...")
-        time.sleep(2)
-
     try:
         messages = state.get("messages", [])
         if not messages or not hasattr(messages[-1], "content"):
@@ -340,9 +326,6 @@ def content_synthesis_node(state: AgentState):
 
     except Exception as e:
         state["error"] = f"Error during synthesis: {str(e)}"
-
-    status_placeholder.success("✌️✌️✌️ Completed successfully!")
-
     return state
 
 
