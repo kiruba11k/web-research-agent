@@ -46,9 +46,14 @@ class AgentState(TypedDict):
     error: Optional[str]
     memory: Optional[dict]  # Added memory to store information
 
+status_placeholder = st.empty()
+
 # Step 1: Query Analysis
 def query_analysis_node(state: AgentState):
-    print("🧠 Query analysis started...")
+    with st.spinner("🤓 Analyzing query..."):
+    status_placeholder.info("🤓 Analyzing query...")
+    state = query_analysis_node(state)
+    time.sleep(2)
     try:
         messages = state["messages"]
         user_query = messages[-1].content if hasattr(messages[-1], "content") else messages[-1]
@@ -99,7 +104,10 @@ def score_result(result, query_terms):
     return sum(term.lower() in combined for term in query_terms)
 
 def web_search_node(state: AgentState):
-    print("🔍 Web search starts")
+    with st.spinner("🕵️‍♂️ Searching the web..."):
+    status_placeholder.info("🕵️‍♂️ Searching the web...")
+    state = web_search_node(state)
+    time.sleep(2)
     try:
         # Retrieve the query plan from memory
         query_plan = state["memory"].get("query_plan", {})
@@ -136,7 +144,7 @@ def web_search_node(state: AgentState):
 
                 organic = results.get("organic_results", [])
                 if not organic:
-                    print(f"[⚠️ Warning] No results on page {page+1} for: '{modified_term}'")
+                    print(f"[Warning] No results on page {page+1} for: '{modified_term}'")
                     break
 
                 for result in organic:
@@ -156,10 +164,10 @@ def web_search_node(state: AgentState):
             r.pop("score")  # Optional: Remove internal score from final output
 
         state["search_results"] = search_results
-        print("✅ Final ranked search results:", search_results[:5])
+        print("Final ranked search results:", search_results[:5])
 
     except Exception as e:
-        state["error"] = f"❌ Error in web search: {str(e)}"
+        state["error"] = f"Error in web search: {str(e)}"
     return state
 
 # Step 3: Web Scraper
@@ -174,7 +182,10 @@ def is_scraping_allowed(url):
         return False  # When in doubt, don't scrape
 
 def web_scraper_node(state: AgentState):
-    print("🕷️ Web scraping started...")
+    with st.spinner("🥷 Scraping content from web..."):
+    status_placeholder.info("🥷 Scraping content from top sites...")
+    state = web_scraper_node(state)
+    time.sleep(2)
     try:
         extracted_content = []
         seen_urls = set()
@@ -198,7 +209,7 @@ def web_scraper_node(state: AgentState):
             seen_urls.add(url)
 
             if not is_scraping_allowed(url):
-                print(f"[🚫 Blocked] Scraping disallowed by robots.txt: {url}")
+                print(f"[Blocked] Scraping disallowed by robots.txt: {url}")
                 continue
 
             try:
@@ -233,10 +244,10 @@ def web_scraper_node(state: AgentState):
                     })
 
             except requests.exceptions.RequestException as e:
-                print(f"[⚠️ Error] Failed to scrape {url} - {str(e)}")
+                print(f"[Error] Failed to scrape {url} - {str(e)}")
                 continue
             except Exception as e:
-                print(f"[⚠️ General Error] {url}: {str(e)}")
+                print(f"[General Error] {url}: {str(e)}")
                 continue
 
         if not extracted_content:
@@ -247,12 +258,15 @@ def web_scraper_node(state: AgentState):
     except Exception as e:
         state["error"] = f"Fatal scraping error: {str(e)}"
 
-    print("✅ Scraping completed.")
+    print("Scraping completed.")
     return state
 
 # Step 4: Content Analyzer & Synthesizer
 def content_synthesis_node(state: AgentState):
-    print("🧠 Starting content synthesis...")
+    with st.spinner("👩‍🍳👨‍🍳 Synthesizing final content..."):
+    status_placeholder.info("👩‍🍳👨‍🍳 Synthesizing final content...")
+    state = content_synthesis_node(state)
+    time.sleep(2)
 
     try:
         messages = state.get("messages", [])
@@ -320,7 +334,8 @@ Respond with a synthesized, human-readable summary:
     except Exception as e:
         state["error"] = f"Error during synthesis: {str(e)}"
 
-    print("✅ Content synthesis completed.")
+    status_placeholder.success("✌️✌️✌️ Completed successfully!")
+
     return state
 
 
@@ -328,7 +343,7 @@ Respond with a synthesized, human-readable summary:
 def final_output_node(state: AgentState):
     print("final process")
     if "error" in state:
-        st.error(f"\nError occurred: {state['error']}")
+        st.error(f"\n 🤒🤒 Error occurred: {state['error']}")
     else:
         st.subheader("Final Research Report:")
         st.write(state.get("final_summary", "No summary generated."))
@@ -384,7 +399,90 @@ def main():
             border-radius: 10px;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
+    .corner-box {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    width: 320px;
+    max-height: 500px;
+    overflow-y: auto;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px 15px 10px 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+    cursor: move;
+    resize: both;
+    overflow: auto;
+}
+.toggle-btn {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    z-index: 10000;
+    background-color: #1a73e8;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.corner-box.collapsed {
+    display: none;
+}
+.close-btn {
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    color: #555;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+}
+.close-btn:hover {
+    color: #f00;
+}
         </style>
+<script>
+function toggleBox() {
+    var box = document.querySelector('.corner-box');
+    box.classList.toggle('collapsed');
+}
+
+function closeBox() {
+    var box = document.querySelector('.corner-box');
+    box.style.display = 'none';
+}
+
+// Drag functionality
+document.addEventListener('DOMContentLoaded', function () {
+    var box = document.querySelector('.corner-box');
+    var isDragging = false;
+    var offset = { x: 0, y: 0 };
+
+    box.addEventListener('mousedown', function (e) {
+        if (e.target.classList.contains('close-btn')) return;
+        isDragging = true;
+        offset.x = e.clientX - box.getBoundingClientRect().left;
+        offset.y = e.clientY - box.getBoundingClientRect().top;
+        box.style.transition = "none";
+    });
+
+    document.addEventListener('mousemove', function (e) {
+        if (isDragging) {
+            box.style.left = (e.clientX - offset.x) + 'px';
+            box.style.top = (e.clientY - offset.y) + 'px';
+            box.style.right = 'auto';
+        }
+    });
+
+    document.addEventListener('mouseup', function () {
+        isDragging = false;
+    });
+});
+</script>
         """, unsafe_allow_html=True)
 
     # Title and description
@@ -402,10 +500,28 @@ def main():
             app.invoke({"messages": [{"role": "user", "content": query}]})
 
     elif not query:
-        st.warning("Please enter a query to start the research.")
+        st.warning("😵‍💫😵‍💫 Please enter a query to start the research.")
 
     # Loading indicator
     st.progress(0)
+
+    st.markdown("<div class='toggle-btn' onclick='toggleBox()'>Toggle Results</div>", unsafe_allow_html=True)
+
+    html = "<div class='corner-box'><div class='close-btn' onclick='closeBox()'>❌</div><h4>🔍 Search Results</h4>"
+
+    for result in search_results:
+        html += f"""
+            <div style='margin-bottom:12px; padding:8px; border-bottom:1px solid #eee;'>
+                <strong>{result['title']}</strong><br>
+                <small>{result['snippet']}</small><br>
+                <a href="{result['link']}" target="_blank">Visit Site</a><br>
+                <small>⭐ Score: {round(result['score'], 2)}</small>
+            </div>
+        """
+
+    html += "</div>"
+
+    st.markdown(html, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
