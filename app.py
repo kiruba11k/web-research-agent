@@ -405,7 +405,33 @@ def main():
             border-radius: 5px;
             background-color: #E0E0E0;
         }
-
+ /* Sidebar style */
+        .sidebar {
+            width: 25%;
+            float: left;
+            padding: 20px;
+            border-right: 1px solid #ccc;
+        }
+        .chat-history {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .chat-message {
+            padding: 5px 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #e4f0e4;
+        }
+        .user-message {
+            background-color: #cfe2ff;
+        }
+        .bot-message {
+            background-color: #d9f7be;
+        }
         </style>
         """, unsafe_allow_html=True)
 
