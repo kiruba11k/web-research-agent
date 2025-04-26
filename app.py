@@ -413,20 +413,27 @@ def main():
     st.markdown('<h1 class="main-title">Web Research Agent</h1>', unsafe_allow_html=True)
     st.markdown('<p class="sub-header">Enter a research query, and let the AI-powered agent conduct a thorough search and analysis.</p>', unsafe_allow_html=True)
 
-    # Create conversation sidebar to show history
-    st.sidebar.markdown('<h3>Conversation History</h3>', unsafe_allow_html=True)
-    conversation_history = st.sidebar.empty()
-    
-    # Update conversation history dynamically
-    if "messages" not in st.session_state:
-        st.session_state["messages"] = []
 
-    # Show messages in the sidebar
-    with conversation_history:
-        st.markdown('<div class="conversation-history">', unsafe_allow_html=True)
-        for msg in st.session_state["messages"]:
-            st.markdown(f'<div class="conversation-message">{msg}</div>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+# Create a session state to track conversation history
+    if 'conversation_history' not in st.session_state:
+        st.session_state['conversation_history'] = []
+
+    # Display previous conversation history
+    st.subheader("Conversation History:")
+    chat_history_container = st.container()
+
+    with chat_history_container:
+        if st.session_state['conversation_history']:
+            for idx, message in enumerate(st.session_state['conversation_history']):
+                if message['sender'] == 'user':
+                    chat_message = f"User: {message['content']}"
+                    st.markdown(f"<div class='chat-message user-message'>{chat_message}</div>", unsafe_allow_html=True)
+                elif message['sender'] == 'bot':
+                    chat_message = f"Bot: {message['content']}"
+                    st.markdown(f"<div class='chat-message bot-message'>{chat_message}</div>", unsafe_allow_html=True)
+        else:
+            st.write("No conversation history yet.")
+
 
     # User input
     query = st.text_input("Enter your research query:", "")
@@ -435,7 +442,17 @@ def main():
     st.markdown("- You can ask for any topic, from historical events to tech trends.")
 
     if query:
-        st.session_state["messages"].append(f"User: {query}")
+        st.session_state['conversation_history'].append({"sender": "user", "content": query})
+
+        # For now, we'll simulate the bot's response
+        bot_response = f"Bot response to '{query}' will be displayed here."
+
+        # Add bot's response to the conversation history
+        st.session_state['conversation_history'].append({"sender": "bot", "content": bot_response})
+
+        # Re-render the chat history to display the new messages
+        st.experimental_rerun()
+        
 
         # Display the summary
         st.write(st.session_state.get("final_summary", "No results found."))
