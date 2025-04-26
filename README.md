@@ -20,7 +20,7 @@ This project involves creating a research agent that can process user queries by
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/research-agent.git
+git clone https://github.com/kiruba11k/web-research-agent.git
 cd research-agent
 ```
 
