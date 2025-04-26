@@ -140,23 +140,6 @@ def web_search_node(state: AgentState):
                         "snippet": result.get("snippet", ""),
                         "score": score_result(result, query_terms)
                     })
-                st.markdown("<div class='toggle-btn' onclick='toggleBox()'>Toggle Results</div>", unsafe_allow_html=True)
-
-                html = "<div class='corner-box'><div class='close-btn' onclick='closeBox()'>❌</div><h4>🔍 Search Results</h4>"
-
-                for result in search_results:
-                    html += f"""
-                        <div style='margin-bottom:12px; padding:8px; border-bottom:1px solid #eee;'>
-                            <strong>{result['title']}</strong><br>
-                            <small>{result['snippet']}</small><br>
-                            <a href="{result['link']}" target="_blank">Visit Site</a><br>
-                            <small>⭐ Score: {round(result['score'], 2)}</small>
-                        </div>
-                    """
-
-                html += "</div>"
-
-                st.markdown(html, unsafe_allow_html=True)
 
         if not search_results:
             raise ValueError("No search results found for any query.")
@@ -390,90 +373,8 @@ def main():
             border-radius: 10px;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .corner-box {
-    position: fixed;
-    top: 100px;
-    right: 20px;
-    width: 320px;
-    max-height: 500px;
-    overflow-y: auto;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    padding: 10px 15px 10px 10px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 9999;
-    cursor: move;
-    resize: both;
-    overflow: auto;
-}
-.toggle-btn {
-    position: fixed;
-    top: 60px;
-    right: 20px;
-    z-index: 10000;
-    background-color: #1a73e8;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-.corner-box.collapsed {
-    display: none;
-}
-.close-btn {
-    position: absolute;
-    top: 4px;
-    right: 8px;
-    color: #555;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 16px;
-}
-.close-btn:hover {
-    color: #f00;
-}
+
         </style>
-        <script>
-function toggleBox() {
-    var box = document.querySelector('.corner-box');
-    box.classList.toggle('collapsed');
-}
-
-function closeBox() {
-    var box = document.querySelector('.corner-box');
-    box.style.display = 'none';
-}
-
-// Drag functionality
-document.addEventListener('DOMContentLoaded', function () {
-    var box = document.querySelector('.corner-box');
-    var isDragging = false;
-    var offset = { x: 0, y: 0 };
-
-    box.addEventListener('mousedown', function (e) {
-        if (e.target.classList.contains('close-btn')) return;
-        isDragging = true;
-        offset.x = e.clientX - box.getBoundingClientRect().left;
-        offset.y = e.clientY - box.getBoundingClientRect().top;
-        box.style.transition = "none";
-    });
-
-    document.addEventListener('mousemove', function (e) {
-        if (isDragging) {
-            box.style.left = (e.clientX - offset.x) + 'px';
-            box.style.top = (e.clientY - offset.y) + 'px';
-            box.style.right = 'auto';
-        }
-    });
-
-    document.addEventListener('mouseup', function () {
-        isDragging = false;
-    });
-});
-</script>
         """, unsafe_allow_html=True)
 
     # Title and description
