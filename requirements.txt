@@ -1,0 +1,13 @@
+streamlit
+requests
+beautifulsoup4
+serpapi
+langchain
+langchain-anthropic
+langgraph
+openai
+python-dotenv
+google-search-results
+selenium 
+webdriver-manager
+aiohttp
