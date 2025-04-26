@@ -10,4 +10,3 @@ google-search-results
 selenium 
 webdriver-manager
 aiohttp
-undetected-chromedriver
