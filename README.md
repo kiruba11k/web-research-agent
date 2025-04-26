@@ -95,6 +95,8 @@ The agent follows a modular structure, with several nodes defined for different 
 ## Flow Diagram
 ![Workflow](images/workflow.png)
 
+## Live Demo
+[Visit](https://mywebresearchagent.streamlit.app/)
 ## AI Design & Prompting
 Prompts are designed to guide the AI through each step. For example, in the query analysis, the prompt directs the model to identify the intent of the query and break it into subcomponents:
 ```
