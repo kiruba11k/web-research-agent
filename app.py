@@ -78,6 +78,9 @@ def query_analysis_node(state: AgentState):
 
         query_plan = json.loads(json_str.group(0))
 
+        # Store the query plan in memory
+        state["memory"] = {"query": user_query, "query_plan": query_plan}
+
         state["query_plan"] = query_plan
 
     except json.JSONDecodeError as e:
@@ -98,10 +101,8 @@ def score_result(result, query_terms):
 def web_search_node(state: AgentState):
     print("🔍 Web search starts")
     try:
-        raw_plan = state["query_plan"]
-        json_str = re.sub(r"^```json|```$", "", raw_plan.strip(), flags=re.MULTILINE).strip()
-        query_plan = json.loads(json_str)
-
+        # Retrieve the query plan from memory
+        query_plan = state["memory"].get("query_plan", {})
         query_terms = query_plan.get("optimized_search_terms", [])
         intent = query_plan.get("intent", "").lower()
         if not query_terms:
