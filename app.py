@@ -353,7 +353,6 @@ graph.add_edge("Final","__end__")
 app = graph.compile()
 
 # Streamlit UI
-
 def main():
     # Custom CSS for styling
     st.markdown("""
@@ -367,28 +366,6 @@ def main():
             font-size: 18px;
             font-style: italic;
             color: #007BFF;
-        }
-        .button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        .card {
-            background-color: #F4F4F4;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
- /* Sidebar style */
-        .sidebar {
-            width: 25%;
-            float: left;
-            padding: 20px;
-            border-right: 1px solid #ccc;
         }
         .chat-history {
             max-height: 400px;
@@ -411,18 +388,29 @@ def main():
             background-color: #d9f7be;
         }
         </style>
-        """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
     # Title and description
     st.markdown('<h1 class="main-title">Web Research Agent</h1>', unsafe_allow_html=True)
     st.markdown('<p class="sub-header">Enter a research query, and let the AI-powered agent conduct a thorough search and analysis.</p>', unsafe_allow_html=True)
 
-
-# Create a session state to track conversation history
+    # --- Create a session state to track conversation history ---
     if 'conversation_history' not in st.session_state:
         st.session_state['conversation_history'] = []
 
-    # Display previous conversation history
+    # --- User Input ---
+    query = st.text_input("Enter your research query:")
+
+    if query:
+        st.session_state['conversation_history'].append({"sender": "user", "content": query})
+
+        # Simulate bot response (replace this later with actual bot logic)
+        bot_response = f"Bot response to '{query}' will be displayed here."
+        st.session_state['conversation_history'].append({"sender": "bot", "content": bot_response})
+
+        st.experimental_rerun()
+
+    # --- Conversation History Display ---
     st.subheader("Conversation History:")
     chat_history_container = st.container()
 
@@ -430,36 +418,16 @@ def main():
         if st.session_state['conversation_history']:
             for idx, message in enumerate(st.session_state['conversation_history']):
                 if message['sender'] == 'user':
-                    chat_message = f"User: {message['content']}"
-                    st.markdown(f"<div class='chat-message user-message'>{chat_message}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='chat-message user-message'>User: {message['content']}</div>", unsafe_allow_html=True)
                 elif message['sender'] == 'bot':
-                    chat_message = f"Bot: {message['content']}"
-                    st.markdown(f"<div class='chat-message bot-message'>{chat_message}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='chat-message bot-message'>Bot: {message['content']}</div>", unsafe_allow_html=True)
         else:
             st.write("No conversation history yet.")
 
-
-    # User input
-    query = st.text_input("Enter your research query:", "")
+    # Helpful Tips
     st.markdown("### Helpful Tips:")
     st.markdown("- Make sure your query is clear and concise.")
-    st.markdown("- You can ask for any topic, from historical events to tech trends.")
-
-    if query:
-        st.session_state['conversation_history'].append({"sender": "user", "content": query})
-
-        # For now, we'll simulate the bot's response
-        bot_response = f"Bot response to '{query}' will be displayed here."
-
-        # Add bot's response to the conversation history
-        st.session_state['conversation_history'].append({"sender": "bot", "content": bot_response})
-
-        # Re-render the chat history to display the new messages
-        st.experimental_rerun()
-        
-
-        # Display the summary
-        st.write(st.session_state.get("final_summary", "No results found."))
+    st.markdown("- You can ask about any topic, from historical events to technology trends.")
 
 if __name__ == "__main__":
     main()
