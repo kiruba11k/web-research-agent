@@ -1,0 +1,31 @@
+#name	- Name of the test case
+#input_query - Query input to the agent
+#expected_behavior - What your agent should ideally do
+#simulate_error - Whether to simulate a specific error (false if normal, otherwise specify the type)
+
+[
+  {
+    "name": "Normal Successful Query",
+    "input_query": "What are the latest trends in Artificial Intelligence for healthcare?",
+    "expected_behavior": "Agent should perform query analysis, search, scrape and synthesize a detailed answer.",
+    "simulate_error": false
+  },
+  {
+    "name": "Empty LLM Response in Query Analysis",
+    "input_query": "How does AI impact education?",
+    "expected_behavior": "Agent should catch an error after query analysis step when LLM returns nothing.",
+    "simulate_error": "empty_llm_response"
+  },
+  {
+    "name": "No Search Results",
+    "input_query": "Explain unicorn startup dynamics on Mars colony.",
+    "expected_behavior": "Agent should catch an error when search returns no results.",
+    "simulate_error": "no_search_results"
+  },
+  {
+    "name": "Scraping Failure",
+    "input_query": "Recent breakthroughs in nuclear fusion energy.",
+    "expected_behavior": "Agent should handle scraping errors (bad URLs or blocked pages) gracefully without crashing.",
+    "simulate_error": "scraping_failure"
+  }
+]
