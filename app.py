@@ -26,7 +26,7 @@ from urllib.parse import urlparse
 from io import StringIO
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-import undetected_chromedriver as uc
+# import undetected_chromedriver as uc
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Load API Key from Streamlit Secrets
