@@ -2,7 +2,6 @@ import os
 import time
 import requests
 import streamlit as st
-import streamlit.components.v1 as components
 from serpapi.google_search import GoogleSearch
 from bs4 import BeautifulSoup
 from langgraph.graph import StateGraph, END
