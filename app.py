@@ -363,6 +363,21 @@ def main():
             font-weight: bold;
             color: #4CAF50;
         }
+
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .card {
+            background-color: #F4F4F4;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
         .sub-header {
             font-size: 18px;
             font-style: italic;
@@ -446,10 +461,6 @@ def main():
     # Loading indicator
     st.progress(0)
 
-    
-
-if __name__ == "__main__":
-    main()
 
 if __name__ == "__main__":
     main()
