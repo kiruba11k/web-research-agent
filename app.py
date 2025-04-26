@@ -28,10 +28,15 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import undetected_chromedriver as uc
 from concurrent.futures import ThreadPoolExecutor, as_completed
-# Load API keys
-SERPAPI_KEY = "87f55eea219339e396eaf1da96f64aa657d5b41265852d245c63e875bd25aee6"
+
+# Load API Key from Streamlit Secrets
+GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
+os.environ["GROQ_API_KEY"] = GROQ_API_KEY
+
+SERPAPI_KEY = st.secrets["SERPAPI_KEY"]
+os.environ["SERPAPI_KEY"] = SERPAPI_KEY
 client = OpenAI(
-    api_key="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",  # Replace with your actual key
+    api_key=GROQ_API_KEY,
     base_url="https://api.groq.com/openai/v1"
 )
 
