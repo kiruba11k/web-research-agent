@@ -51,9 +51,9 @@ status_placeholder = st.empty()
 # Step 1: Query Analysis
 def query_analysis_node(state: AgentState):
     with st.spinner("🤓 Analyzing query..."):
-    status_placeholder.info("🤓 Analyzing query...")
-    state = query_analysis_node(state)
-    time.sleep(2)
+        status_placeholder.info("🤓 Analyzing query...")
+        state = query_analysis_node(state)
+        time.sleep(2)
     try:
         messages = state["messages"]
         user_query = messages[-1].content if hasattr(messages[-1], "content") else messages[-1]
@@ -105,9 +105,9 @@ def score_result(result, query_terms):
 
 def web_search_node(state: AgentState):
     with st.spinner("🕵️‍♂️ Searching the web..."):
-    status_placeholder.info("🕵️‍♂️ Searching the web...")
-    state = web_search_node(state)
-    time.sleep(2)
+        status_placeholder.info("🕵️‍♂️ Searching the web...")
+        state = web_search_node(state)
+        time.sleep(2)
     try:
         # Retrieve the query plan from memory
         query_plan = state["memory"].get("query_plan", {})
@@ -183,9 +183,9 @@ def is_scraping_allowed(url):
 
 def web_scraper_node(state: AgentState):
     with st.spinner("🥷 Scraping content from web..."):
-    status_placeholder.info("🥷 Scraping content from top sites...")
-    state = web_scraper_node(state)
-    time.sleep(2)
+        status_placeholder.info("🥷 Scraping content from top sites...")
+        state = web_scraper_node(state)
+        time.sleep(2)
     try:
         extracted_content = []
         seen_urls = set()
@@ -264,9 +264,9 @@ def web_scraper_node(state: AgentState):
 # Step 4: Content Analyzer & Synthesizer
 def content_synthesis_node(state: AgentState):
     with st.spinner("👩‍🍳👨‍🍳 Synthesizing final content..."):
-    status_placeholder.info("👩‍🍳👨‍🍳 Synthesizing final content...")
-    state = content_synthesis_node(state)
-    time.sleep(2)
+        status_placeholder.info("👩‍🍳👨‍🍳 Synthesizing final content...")
+        state = content_synthesis_node(state)
+        time.sleep(2)
 
     try:
         messages = state.get("messages", [])
