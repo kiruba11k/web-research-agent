@@ -407,61 +407,27 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
-    # --- Session State ---
-    if 'conversation_history' not in st.session_state:
-        st.session_state.conversation_history = []
-
-    # --- Sidebar for Conversation History ---
-    with st.sidebar:
-        st.subheader("Conversation History:")
-
-        if st.button("🗑️ Clear History"):
-            st.session_state.conversation_history = []
-
-        chat_history_container = st.container()
-
-        with chat_history_container:
-            st.markdown('<div id="chat-container" class="chat-history">', unsafe_allow_html=True)
-
-            if st.session_state.conversation_history:
-                for message in st.session_state.conversation_history:
-                    if message['sender'] == 'user':
-                        st.markdown(f"<div class='chat-message user-message'><b>User:</b> {message['content']}</div>", unsafe_allow_html=True)
-                    else:
-                        st.markdown(f"<div class='chat-message bot-message'><b>Bot:</b> {message['content']}</div>", unsafe_allow_html=True)
-            else:
-                st.write("No conversation history yet.")
-
-            st.markdown('</div>', unsafe_allow_html=True)
-
-    # --- Main Content ---
+    # Title and description
     st.markdown('<h1 class="main-title">Web Research Agent</h1>', unsafe_allow_html=True)
     st.markdown('<p class="sub-header">Enter a research query, and let the AI-powered agent conduct a thorough search and analysis.</p>', unsafe_allow_html=True)
 
-    query = st.text_input("Enter your research query:")
-
-    if query and st.button("Start Research", key="start_research", help="Click here to start the research process."):
-        # Append user query
-        st.session_state.conversation_history.append({"sender": "user", "content": query})
-
-        # Placeholder bot response
-        bot_response = f"Bot response to '{query}' will be displayed here."
-        st.session_state.conversation_history.append({"sender": "bot", "content": bot_response})
-
-        # (If you have real app code, call it here)
-        # with st.spinner("Processing..."):
-        #     response = app.invoke({"messages": [{"role": "user", "content": query}]})
-        #     # Process and update the conversation here
-
-        st.success("✅ Research completed!")
-
-        st.rerun()
+    # User input
+    query = st.text_input("Enter your research query:", "")
+    st.markdown("### Helpful Tips:")
+    st.markdown("- Make sure your query is clear and concise.")
+    st.markdown("- You can ask for any topic, from science to history!")
+    
+    if st.button("Start Research", key="start_research", help="Click here to start the research process.", disabled=not query):
+        with st.spinner("Processing..."):
+            app.invoke({"messages": [{"role": "user", "content": query}]})
 
     elif not query:
-        st.warning("😵‍💫 Please enter a query to start the research.")
+        st.warning("😵‍💫😵‍💫 Please enter a query to start the research.")
 
-    # Optional Progress Bar (static here, can be made dynamic)
+    # Loading indicator
     st.progress(0)
+
+    
 
 if __name__ == "__main__":
     main()
