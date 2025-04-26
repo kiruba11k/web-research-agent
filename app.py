@@ -390,6 +390,51 @@ def main():
             border-radius: 10px;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
+        .corner-box {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    width: 320px;
+    max-height: 500px;
+    overflow-y: auto;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px 15px 10px 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+    cursor: move;
+    resize: both;
+    overflow: auto;
+}
+.toggle-btn {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    z-index: 10000;
+    background-color: #1a73e8;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.corner-box.collapsed {
+    display: none;
+}
+.close-btn {
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    color: #555;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+}
+.close-btn:hover {
+    color: #f00;
+}
         </style>
         <script>
 function toggleBox() {
