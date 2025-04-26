@@ -140,6 +140,23 @@ def web_search_node(state: AgentState):
                         "snippet": result.get("snippet", ""),
                         "score": score_result(result, query_terms)
                     })
+                st.markdown("<div class='toggle-btn' onclick='toggleBox()'>Toggle Results</div>", unsafe_allow_html=True)
+
+                html = "<div class='corner-box'><div class='close-btn' onclick='closeBox()'>❌</div><h4>🔍 Search Results</h4>"
+
+                for result in search_results:
+                    html += f"""
+                        <div style='margin-bottom:12px; padding:8px; border-bottom:1px solid #eee;'>
+                            <strong>{result['title']}</strong><br>
+                            <small>{result['snippet']}</small><br>
+                            <a href="{result['link']}" target="_blank">Visit Site</a><br>
+                            <small>⭐ Score: {round(result['score'], 2)}</small>
+                        </div>
+                    """
+
+                html += "</div>"
+
+                st.markdown(html, unsafe_allow_html=True)
 
         if not search_results:
             raise ValueError("No search results found for any query.")
@@ -374,6 +391,44 @@ def main():
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
         </style>
+        <script>
+function toggleBox() {
+    var box = document.querySelector('.corner-box');
+    box.classList.toggle('collapsed');
+}
+
+function closeBox() {
+    var box = document.querySelector('.corner-box');
+    box.style.display = 'none';
+}
+
+// Drag functionality
+document.addEventListener('DOMContentLoaded', function () {
+    var box = document.querySelector('.corner-box');
+    var isDragging = false;
+    var offset = { x: 0, y: 0 };
+
+    box.addEventListener('mousedown', function (e) {
+        if (e.target.classList.contains('close-btn')) return;
+        isDragging = true;
+        offset.x = e.clientX - box.getBoundingClientRect().left;
+        offset.y = e.clientY - box.getBoundingClientRect().top;
+        box.style.transition = "none";
+    });
+
+    document.addEventListener('mousemove', function (e) {
+        if (isDragging) {
+            box.style.left = (e.clientX - offset.x) + 'px';
+            box.style.top = (e.clientY - offset.y) + 'px';
+            box.style.right = 'auto';
+        }
+    });
+
+    document.addEventListener('mouseup', function () {
+        isDragging = false;
+    });
+});
+</script>
 
         """, unsafe_allow_html=True)
 
