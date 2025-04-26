@@ -379,7 +379,7 @@ def main():
             padding: 5px 10px;
             margin-bottom: 10px;
             border-radius: 5px;
-            background-color: #e4f0e4;
+            font-size: 14px;
         }
         .user-message {
             background-color: #cfe2ff;
@@ -390,11 +390,10 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
-    # Title and description
     st.markdown('<h1 class="main-title">Web Research Agent</h1>', unsafe_allow_html=True)
     st.markdown('<p class="sub-header">Enter a research query, and let the AI-powered agent conduct a thorough search and analysis.</p>', unsafe_allow_html=True)
 
-    # --- Create a session state to track conversation history ---
+    # --- Session State ---
     if 'conversation_history' not in st.session_state:
         st.session_state['conversation_history'] = []
 
@@ -403,28 +402,44 @@ def main():
 
     if query:
         st.session_state['conversation_history'].append({"sender": "user", "content": query})
-
-        # Simulate bot response (replace this later with actual bot logic)
         bot_response = f"Bot response to '{query}' will be displayed here."
         st.session_state['conversation_history'].append({"sender": "bot", "content": bot_response})
+        st.rerun()
 
-        st.experimental_rerun()
+    # --- Sidebar for Conversation History ---
+    with st.sidebar:
+        st.subheader("Conversation History")
 
-    # --- Conversation History Display ---
-    st.subheader("Conversation History:")
-    chat_history_container = st.container()
+        chat_history_container = st.container()
 
-    with chat_history_container:
-        if st.session_state['conversation_history']:
-            for idx, message in enumerate(st.session_state['conversation_history']):
-                if message['sender'] == 'user':
-                    st.markdown(f"<div class='chat-message user-message'>User: {message['content']}</div>", unsafe_allow_html=True)
-                elif message['sender'] == 'bot':
-                    st.markdown(f"<div class='chat-message bot-message'>Bot: {message['content']}</div>", unsafe_allow_html=True)
-        else:
-            st.write("No conversation history yet.")
+        with chat_history_container:
+            st.markdown('<div id="chat-container" class="chat-history">', unsafe_allow_html=True)
 
-    # Helpful Tips
+            if st.session_state['conversation_history']:
+                for idx, message in enumerate(st.session_state['conversation_history']):
+                    if message['sender'] == 'user':
+                        st.markdown(f"<div class='chat-message user-message'>User: {message['content']}</div>", unsafe_allow_html=True)
+                    elif message['sender'] == 'bot':
+                        st.markdown(f"<div class='chat-message bot-message'>Bot: {message['content']}</div>", unsafe_allow_html=True)
+            else:
+                st.write("No conversation history yet.")
+
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        # Auto-scroll JavaScript
+        components.html(
+            """
+            <script>
+                var chatContainer = window.parent.document.querySelector('#chat-container');
+                if (chatContainer) {
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }
+            </script>
+            """,
+            height=0,
+        )
+
+    # --- Some Tips ---
     st.markdown("### Helpful Tips:")
     st.markdown("- Make sure your query is clear and concise.")
     st.markdown("- You can ask about any topic, from historical events to technology trends.")
